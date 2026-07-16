@@ -14,8 +14,8 @@ const Footer = () => {
       fontWeight={500}
     >
       Made with ❤️ by{' '}
-      <Link href="https://themewagon.com/" target="_blank" rel="noreferrer">
-        {'ThemeWagon'}
+      <Link href="#" target="_blank" rel="noreferrer">
+        {'Klinik'}
       </Link>
     </Typography>
   );

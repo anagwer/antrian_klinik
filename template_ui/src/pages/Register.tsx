@@ -594,10 +594,10 @@ export default function Register() {
 
                 <Grid item xs={12} sm={6}>
                   <FormControl fullWidth required>
-                    <InputLabel>Poliklinik Tujuan</InputLabel>
+                    <InputLabel>Layanan Tujuan</InputLabel>
                     <Select
                       value={idPoli}
-                      label="Poliklinik Tujuan"
+                      label="Layanan Tujuan"
                       onChange={(e) => setIdPoli(e.target.value)}
                     >
                       {poliklinik.map((p) => (

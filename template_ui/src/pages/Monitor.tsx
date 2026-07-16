@@ -86,10 +86,20 @@ export default function Monitor() {
       .catch((err) => console.error('Gagal mengambil antrean aktif:', err));
   };
 
+  // Warm up voices
   useEffect(() => {
+    const loadVoices = () => {
+      if ('speechSynthesis' in window) {
+        window.speechSynthesis.getVoices();
+      }
+    };
+    loadVoices();
     if ('speechSynthesis' in window) {
-      window.speechSynthesis.getVoices();
+      window.speechSynthesis.onvoiceschanged = loadVoices;
     }
+  }, []);
+
+  useEffect(() => {
     fetchActiveCalls();
     // Poll every 4 seconds for real-time responsiveness
     const interval = setInterval(fetchActiveCalls, 4000);
@@ -123,13 +133,33 @@ export default function Monitor() {
       utterance.pitch = 1.25; // Raised pitch for female voice effect
       
       // Attempt to find Indonesian female voice
+      const savedVoiceName = localStorage.getItem('selectedVoiceName');
       const voices = window.speechSynthesis.getVoices();
-      let voice = voices.find(v => 
-        (v.lang.startsWith('id') || v.lang.includes('ID')) && 
-        (v.name.toLowerCase().includes('gadis') || v.name.toLowerCase().includes('google') || v.name.toLowerCase().includes('female') || v.name.toLowerCase().includes('local'))
-      );
+      let voice = null;
+      if (savedVoiceName) {
+        voice = voices.find(v => v.name === savedVoiceName);
+      }
       if (!voice) {
-        voice = voices.find(v => v.lang.startsWith('id') || v.lang.includes('ID'));
+        voice = voices.find(v => {
+          const lang = v.lang.toLowerCase();
+          const name = v.name.toLowerCase();
+          return (lang.startsWith('id') || lang.includes('id')) && 
+                 (name.includes('gadis') || name.includes('indonesia') || name.includes('female') || name.includes('google') || name.includes('susan') || name.includes('online') || name.includes('natural'));
+        });
+      }
+      if (!voice) {
+        // Prefer non-male voices if Gadis is not found
+        voice = voices.find(v => {
+          const lang = v.lang.toLowerCase();
+          const name = v.name.toLowerCase();
+          return (lang.startsWith('id') || lang.includes('id')) && !name.includes('andika') && !name.includes('male');
+        });
+      }
+      if (!voice) {
+        voice = voices.find(v => {
+          const lang = v.lang.toLowerCase();
+          return lang.startsWith('id') || lang.includes('id');
+        });
       }
       if (voice) {
         utterance.voice = voice;
@@ -149,8 +179,8 @@ export default function Monitor() {
     <Box
       sx={{
         minHeight: '100vh',
-        bgcolor: '#0a192f',
-        color: '#fff',
+        bgcolor: '#f1f5f9',
+        color: '#1e293b',
         display: 'flex',
         flexDirection: 'column',
         overflow: 'hidden'
@@ -158,9 +188,9 @@ export default function Monitor() {
     >
       {/* Header Bar */}
       <Paper
-        elevation={4}
+        elevation={2}
         sx={{
-          bgcolor: '#172a45',
+          bgcolor: '#ffffff',
           borderRadius: 0,
           p: 2,
           display: 'flex',
@@ -172,20 +202,20 @@ export default function Monitor() {
         <Box display="flex" alignItems="center" gap={1.5}>
           <Icon icon="material-symbols:local-hospital" width={32} color="#1976d2" />
           <Box>
-            <Typography variant="h5" fontWeight="bold" letterSpacing={0.5}>
+            <Typography variant="h5" fontWeight="bold" letterSpacing={0.5} sx={{ color: '#0f172a' }}>
               MONITOR ANTRIAN UTAMA
             </Typography>
-            <Typography variant="caption" color="text.secondary">
+            <Typography variant="caption" sx={{ color: '#64748b' }}>
               Klinik Anagwer - Mengutamakan Pelayanan Berkualitas
             </Typography>
           </Box>
         </Box>
 
         <Box display="flex" alignItems="center" gap={3}>
-          <Typography variant="h5" fontWeight="bold" sx={{ fontFamily: 'monospace' }}>
+          <Typography variant="h5" fontWeight="bold" sx={{ fontFamily: 'monospace', color: '#0f172a' }}>
             {timeString}
           </Typography>
-          <IconButton onClick={() => setIsMuted(!isMuted)} sx={{ color: '#fff' }}>
+          <IconButton onClick={() => setIsMuted(!isMuted)} sx={{ color: '#475569' }}>
             <Icon icon={isMuted ? 'ic:round-volume-off' : 'ic:round-volume-up'} width={28} />
           </IconButton>
         </Box>
@@ -198,10 +228,10 @@ export default function Monitor() {
           {/* Left Side: Highlight/Current Called Patient */}
           <Grid item xs={12} md={7} display="flex" flexDirection="column">
             <Paper
-              elevation={6}
+              elevation={4}
               sx={{
                 flexGrow: 1,
-                bgcolor: '#172a45',
+                bgcolor: '#ffffff',
                 borderRadius: '16px',
                 p: 4,
                 textAlign: 'center',
@@ -209,13 +239,13 @@ export default function Monitor() {
                 flexDirection: 'column',
                 justifyContent: 'center',
                 alignItems: 'center',
-                border: '2px solid rgba(25, 118, 210, 0.3)',
+                border: '2px solid rgba(25, 118, 210, 0.1)',
                 position: 'relative'
               }}
             >
               {activeCall ? (
                 <>
-                  <Typography variant="subtitle1" color="primary.light" fontWeight="bold" letterSpacing={2}>
+                  <Typography variant="subtitle1" color="primary.main" fontWeight="bold" letterSpacing={2}>
                     PANGGILAN AKTIF
                   </Typography>
                   <Typography
@@ -223,23 +253,23 @@ export default function Monitor() {
                     fontWeight="900"
                     sx={{
                       fontSize: { xs: '6rem', md: '10rem' },
-                      color: '#00e676',
+                      color: '#10b981',
                       fontFamily: 'monospace',
-                      textShadow: '0 0 20px rgba(0,230,118,0.3)',
+                      textShadow: '0 0 10px rgba(16,185,129,0.15)',
                       my: 2
                     }}
                   >
                     {activeCall.active_call}
                   </Typography>
-                  <Divider sx={{ width: '80%', bgcolor: 'rgba(255,255,255,0.1)', mb: 3 }} />
+                  <Divider sx={{ width: '80%', mb: 3 }} />
                   
-                  <Typography variant="h3" fontWeight="bold" gutterBottom>
+                  <Typography variant="h3" fontWeight="bold" sx={{ color: '#0f172a' }} gutterBottom>
                     {activeCall.nama_poli}
                   </Typography>
-                  <Typography variant="h5" color="text.secondary" gutterBottom>
+                  <Typography variant="h5" color="text.secondary" sx={{ color: '#475569' }} gutterBottom>
                     Dokter: {activeCall.doctor_name}
                   </Typography>
-                  <Typography variant="h6" color="primary.light" fontWeight="bold" sx={{ mt: 1 }}>
+                  <Typography variant="h6" color="primary.main" fontWeight="bold" sx={{ mt: 1 }}>
                     Pasien: {activeCall.patient_name}
                   </Typography>
 
@@ -249,9 +279,9 @@ export default function Monitor() {
                       position: 'absolute',
                       bottom: 16,
                       right: 16,
-                      color: 'primary.light',
-                      bgcolor: 'rgba(25,118,210,0.1)',
-                      '&:hover': { bgcolor: 'rgba(25,118,210,0.2)' }
+                      color: 'primary.main',
+                      bgcolor: 'rgba(25,118,210,0.05)',
+                      '&:hover': { bgcolor: 'rgba(25,118,210,0.1)' }
                     }}
                   >
                     <Icon icon="ic:round-volume-up" width={24} />
@@ -259,8 +289,8 @@ export default function Monitor() {
                 </>
               ) : (
                 <Box>
-                  <Icon icon="ic:round-queue" width={100} color="rgba(255,255,255,0.1)" />
-                  <Typography variant="h5" color="text.secondary" mt={2}>
+                  <Icon icon="ic:round-queue" width={100} color="rgba(0,0,0,0.1)" />
+                  <Typography variant="h5" color="text.secondary" sx={{ color: '#64748b' }} mt={2}>
                     Belum ada antrean yang dipanggil saat ini.
                   </Typography>
                 </Box>
@@ -275,11 +305,11 @@ export default function Monitor() {
                 <Grid item xs={12} sm={6} md={12} key={item.id_poli}>
                   <Card
                     sx={{
-                      bgcolor: '#172a45',
-                      color: '#fff',
+                      bgcolor: '#ffffff',
+                      color: '#1e293b',
                       borderRadius: '12px',
                       borderLeft: '6px solid #1976d2',
-                      boxShadow: '0 4px 20px rgba(0,0,0,0.15)',
+                      boxShadow: '0 4px 20px rgba(0,0,0,0.05)',
                       transition: 'transform 0.2s',
                       '&:hover': { transform: 'translateY(-2px)' }
                     }}
@@ -287,10 +317,10 @@ export default function Monitor() {
                     <CardContent sx={{ p: 2.5, '&:last-child': { pb: 2.5 } }}>
                       <Box display="flex" justifyContent="space-between" alignItems="center">
                         <Box>
-                          <Typography variant="h6" fontWeight="bold">
+                          <Typography variant="h6" fontWeight="bold" sx={{ color: '#0f172a' }}>
                             {item.nama_poli}
                           </Typography>
-                          <Typography variant="caption" color="text.secondary" display="block">
+                          <Typography variant="caption" display="block" sx={{ color: '#64748b' }}>
                             Dokter: {item.doctor_name}
                           </Typography>
                         </Box>
@@ -298,21 +328,21 @@ export default function Monitor() {
                         {/* Call Number Display */}
                         <Box
                           sx={{
-                            bgcolor: '#0a192f',
+                            bgcolor: '#f8fafc',
                             px: 3,
                             py: 1.5,
                             borderRadius: '8px',
-                            border: '1px solid rgba(255,255,255,0.05)',
+                            border: '1px solid rgba(0,0,0,0.05)',
                             textAlign: 'center'
                           }}
                         >
-                          <Typography variant="caption" color="text.secondary" display="block" fontSize="9px">
+                          <Typography variant="caption" display="block" fontSize="9px" sx={{ color: '#64748b' }}>
                             SEDANG MELAYANI
                           </Typography>
                           <Typography
                             variant="h4"
                             fontWeight="bold"
-                            color={item.active_call !== '---' ? '#00e676' : 'text.secondary'}
+                            color={item.active_call !== '---' ? '#10b981' : 'text.secondary'}
                             sx={{ fontFamily: 'monospace' }}
                           >
                             {item.active_call}
@@ -320,10 +350,10 @@ export default function Monitor() {
                         </Box>
                       </Box>
 
-                      <Divider sx={{ my: 1.5, bgcolor: 'rgba(255,255,255,0.05)' }} />
+                      <Divider sx={{ my: 1.5 }} />
 
                       <Box display="flex" justifyContent="space-between" alignItems="center">
-                        <Typography variant="caption" color="text.secondary" display="flex" alignItems="center" gap={0.5}>
+                        <Typography variant="caption" display="flex" alignItems="center" gap={0.5} sx={{ color: '#475569' }}>
                           <Icon icon="ic:round-people" /> Antrean Menunggu: <strong>{item.waiting_count}</strong>
                         </Typography>
                         
@@ -331,7 +361,7 @@ export default function Monitor() {
                           <IconButton
                             size="small"
                             onClick={() => forceAnnounce(item)}
-                            sx={{ color: 'primary.light', p: 0.5 }}
+                            sx={{ color: 'primary.main', p: 0.5 }}
                           >
                             <Icon icon="ic:round-volume-up" width={18} />
                           </IconButton>

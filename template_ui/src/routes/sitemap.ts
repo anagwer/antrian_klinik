@@ -1,4 +1,4 @@
-import paths from 'routes/paths';
+// Sitemap configuration
 
 export interface SubMenuItem {
   name: string;
@@ -40,18 +40,17 @@ const sitemap: MenuItem[] = [
     icon: 'material-symbols:tv-outline',
   },
   {
-    id: 'authentication',
-    subheader: 'Authentication',
-    icon: 'ic:round-security',
-    active: true,
-    items: [
-      {
-        name: 'Sign In',
-        pathName: 'signin',
-        path: paths.signin,
-      }
-    ],
-  }
+    id: 'layanan-crud',
+    subheader: 'Data Layanan',
+    path: '/layanan',
+    icon: 'material-symbols:medical-services',
+  },
+  {
+    id: 'dokter-crud',
+    subheader: 'Data Dokter',
+    path: '/dokter',
+    icon: 'material-symbols:medical-information',
+  },
 ];
 
 export default sitemap;

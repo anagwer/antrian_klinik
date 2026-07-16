@@ -13,6 +13,8 @@ const Signin = lazy(() => import('pages/authentication/Signin'));
 const Signup = lazy(() => import('pages/authentication/Signup'));
 const Register = lazy(() => import('pages/Register'));
 const Monitor = lazy(() => import('pages/Monitor'));
+const Layanan = lazy(() => import('pages/Layanan'));
+const Dokter = lazy(() => import('pages/Dokter'));
 
 const router = createHashRouter(
   [
@@ -36,6 +38,22 @@ const router = createHashRouter(
             {
               index: true,
               element: <Dashboard />,
+            },
+            {
+              path: '/layanan',
+              element: (
+                <Suspense fallback={<PageLoader />}>
+                  <Layanan />
+                </Suspense>
+              ),
+            },
+            {
+              path: '/dokter',
+              element: (
+                <Suspense fallback={<PageLoader />}>
+                  <Dokter />
+                </Suspense>
+              ),
             },
           ],
         },

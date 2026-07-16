@@ -14,6 +14,14 @@ import LogoImg from 'assets/images/logo.png';
 import sitemap from 'routes/sitemap';
 
 const DrawerItems = () => {
+  const handleLogout = () => {
+    localStorage.removeItem('user');
+    fetch(`${window.location.origin}/project/antrian/index.php/api/logout`)
+      .finally(() => {
+        window.location.hash = '#/auth/signin';
+      });
+  };
+
   return (
     <>
       <Stack
@@ -67,7 +75,14 @@ const DrawerItems = () => {
       </List>
 
       <Box mt="auto" px={3} pb={6}>
-        <Button variant="text" startIcon={<IconifyIcon icon="ic:baseline-logout" />}>
+        <Button 
+          variant="contained" 
+          color="primary"
+          fullWidth
+          startIcon={<IconifyIcon icon="ic:baseline-logout" />}
+          onClick={handleLogout}
+          sx={{ borderRadius: '8px', textTransform: 'none', fontWeight: 'bold', bgcolor: 'primary.main', color: '#fff', '&:hover': { bgcolor: 'primary.dark' } }}
+        >
           Log Out
         </Button>
       </Box>

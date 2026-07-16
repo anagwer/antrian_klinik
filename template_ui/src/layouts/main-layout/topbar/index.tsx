@@ -1,11 +1,11 @@
 import Link from '@mui/material/Link';
 import Stack from '@mui/material/Stack';
-import Badge from '@mui/material/Badge';
 import Toolbar from '@mui/material/Toolbar';
 import ButtonBase from '@mui/material/ButtonBase';
 import IconButton from '@mui/material/IconButton';
 import IconifyIcon from 'components/base/IconifyIcon';
 import ProfileMenu from './ProfileMenu';
+import NotificationMenu from './NotificationMenu';
 import Image from 'components/base/Image';
 import LogoImg from 'assets/images/logo.png';
 
@@ -54,11 +54,7 @@ const Topbar = ({ isClosing, mobileOpen, setMobileOpen }: TopbarProps) => {
       </Stack>
 
       <Stack spacing={{ xs: 1, sm: 2 }} alignItems="center">
-        <IconButton size="large">
-          <Badge badgeContent={2} color="error">
-            <IconifyIcon icon="ic:outline-notifications-none" />
-          </Badge>
-        </IconButton>
+        <NotificationMenu />
         <ProfileMenu />
       </Stack>
     </Stack>

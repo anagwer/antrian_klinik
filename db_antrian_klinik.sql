@@ -34,10 +34,10 @@ CREATE TABLE IF NOT EXISTS `poliklinik` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 INSERT INTO `poliklinik` (`id_poli`, `nama_poli`, `kode_antrian`, `deskripsi`, `status`) VALUES
-('UMM', 'Poli Umum', 'A', 'Pelayanan kesehatan umum tingkat pertama.', 'aktif'),
-('OBG', 'Poli Obgyn (Kandungan)', 'B', 'Pelayanan kandungan, kehamilan, dan kesehatan reproduksi.', 'aktif'),
-('GIG', 'Poli Gigi', 'C', 'Pelayanan pemeriksaan dan tindakan kesehatan gigi.', 'aktif'),
-('ANK', 'Poli Anak', 'D', 'Pelayanan tumbuh kembang dan penyakit anak.', 'aktif');
+('BYK', 'Baby & Kids Care', 'A', 'Pelayanan pijat, renang, totok wajah, dan spa bayi & anak.', 'aktif'),
+('MTB', 'Massage Therapy Baby & Kids', 'B', 'Pijat terapi untuk bayi prematur, batuk pilek, kolik, rewel, dll.', 'aktif'),
+('MMC', 'Mom Care', 'C', 'Pelayanan pijat hamil, pijat nifas, laktasi, dan breast care.', 'aktif'),
+('MMH', 'Mom Health', 'D', 'Yoga kesuburan, prenatal yoga, hypnobirthing, dan persiapan persalinan.', 'aktif');
 
 -- --------------------------------------------------------
 -- Table structure for table `dokter`
@@ -53,10 +53,10 @@ CREATE TABLE IF NOT EXISTS `dokter` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 INSERT INTO `dokter` (`id_dokter`, `nama_dokter`, `id_poli`, `jadwal_praktek`, `status`) VALUES
-(1, 'dr. Andi Wibowo', 'UMM', 'Senin - Jumat (08:00 - 14:00)', 'aktif'),
-(2, 'dr. Citra Lestari, Sp.OG', 'OBG', 'Senin, Rabu, Jumat (09:00 - 13:00)', 'aktif'),
-(3, 'drg. Budi Santoso', 'GIG', 'Selasa & Kamis (10:00 - 15:00)', 'aktif'),
-(4, 'dr. Dian Pratama, Sp.A', 'ANK', 'Senin - Sabtu (08:00 - 12:00)', 'aktif');
+(1, 'Bidan Aurelia, A.Md.Keb', 'MMC', 'Senin - Sabtu (08:00 - 16:00)', 'aktif'),
+(2, 'Terapis Indah Lestari', 'BYK', 'Senin - Minggu (09:00 - 17:00)', 'aktif'),
+(3, 'Fisioterapis Budi Santoso, S.Ft', 'MTB', 'Selasa, Kamis, Sabtu (10:00 - 15:00)', 'aktif'),
+(4, 'Bidan Dian Pratama, S.Tr.Keb', 'MMH', 'Senin - Jumat (08:00 - 14:00)', 'aktif');
 
 -- --------------------------------------------------------
 -- Table structure for table `pasien`

@@ -98,17 +98,24 @@ class Api extends CI_Controller {
     // ==========================================
 
     public function poliklinik() {
-        $this->db->where('status', 'aktif');
+        $all = $this->input->get('all');
+        if (empty($all)) {
+            $this->db->where('status', 'aktif');
+        }
         $poli = $this->db->get('poliklinik')->result();
         $this->json_response(['status' => 'success', 'data' => $poli]);
     }
 
     public function dokter() {
         $id_poli = $this->input->get('id_poli');
+        $all = $this->input->get('all');
         $this->db->select('dokter.*, poliklinik.nama_poli');
         $this->db->from('dokter');
         $this->db->join('poliklinik', 'dokter.id_poli = poliklinik.id_poli');
-        $this->db->where('dokter.status', 'aktif');
+        
+        if (empty($all)) {
+            $this->db->where('dokter.status', 'aktif');
+        }
         
         if (!empty($id_poli)) {
             $this->db->where('dokter.id_poli', $id_poli);
@@ -314,7 +321,7 @@ class Api extends CI_Controller {
         if (!empty($status)) {
             $this->db->where('antrian.status', $status);
         }
-        if (!empty($id_poli)) {
+        if (!empty($id_poli) && $id_poli !== 'all') {
             $this->db->where('antrian.id_poli', $id_poli);
         }
 
@@ -333,32 +340,33 @@ class Api extends CI_Controller {
         $input = $this->get_json_input();
         $id_poli = isset($input['id_poli']) ? $input['id_poli'] : $this->input->post('id_poli');
 
-        if (empty($id_poli)) {
-            $this->json_response(['status' => 'error', 'message' => 'Poliklinik harus dipilih.'], 400);
-        }
-
         $today = date('Y-m-d');
 
-        // FIFO query: Find the oldest 'menunggu' patient for this poli today
+        // FIFO query: Find the oldest 'menunggu' patient today
         $this->db->select('antrian.*, poliklinik.nama_poli, dokter.nama_dokter');
         $this->db->from('antrian');
         $this->db->join('poliklinik', 'antrian.id_poli = poliklinik.id_poli');
         $this->db->join('dokter', 'antrian.id_dokter = dokter.id_dokter');
+        
         $this->db->where([
-            'antrian.id_poli' => $id_poli,
             'antrian.status' => 'menunggu',
             'antrian.tanggal_antrian' => $today
         ]);
+
+        if (!empty($id_poli) && $id_poli !== 'all') {
+            $this->db->where('antrian.id_poli', $id_poli);
+        }
+
         $this->db->order_by('antrian.waktu_daftar', 'ASC'); // FIFO core logic!
         $this->db->limit(1);
         
         $next_patient = $this->db->get()->row();
 
         if ($next_patient) {
-            // Step 1: Update any currently 'dipanggil' patient for this Poliklinik to 'selesai' or keep them.
-            // In standard clinics, when a new patient is called, the previous one gets marked 'selesai' automatically.
+            $target_poli = $next_patient->id_poli;
+            // Step 1: Update any currently 'dipanggil' patient for this Poliklinik to 'selesai'
             $this->db->where([
-                'id_poli' => $id_poli,
+                'id_poli' => $target_poli,
                 'status' => 'dipanggil',
                 'tanggal_antrian' => $today
             ]);
@@ -383,7 +391,7 @@ class Api extends CI_Controller {
         } else {
             $this->json_response([
                 'status' => 'info',
-                'message' => 'Antrean untuk Poliklinik ini sudah habis.'
+                'message' => 'Antrean sudah habis.'
             ], 200);
         }
     }
@@ -546,6 +554,408 @@ class Api extends CI_Controller {
                     'offline' => $offline
                 ],
                 'hourly' => $hourly
+            ]
+        ]);
+    }
+
+    // ==========================================
+    // CRUD FOR POLIKLINIK (LAYANAN) & DOKTER
+    // ==========================================
+
+    public function poliklinik_create() {
+        $input = $this->get_json_input();
+        $id_poli = trim(isset($input['id_poli']) ? $input['id_poli'] : '');
+        $nama_poli = trim(isset($input['nama_poli']) ? $input['nama_poli'] : '');
+        $kode_antrian = trim(isset($input['kode_antrian']) ? $input['kode_antrian'] : '');
+        $deskripsi = trim(isset($input['deskripsi']) ? $input['deskripsi'] : '');
+        $status = isset($input['status']) ? $input['status'] : 'aktif';
+
+        if (empty($id_poli) || empty($nama_poli) || empty($kode_antrian)) {
+            $this->json_response(['status' => 'error', 'message' => 'ID, Nama Layanan, dan Kode Antrean wajib diisi.'], 400);
+        }
+
+        // Validate unique ID
+        $existing = $this->db->get_where('poliklinik', ['id_poli' => $id_poli])->row();
+        if ($existing) {
+            $this->json_response(['status' => 'error', 'message' => 'ID Layanan sudah digunakan.'], 400);
+        }
+
+        $data = [
+            'id_poli' => strtoupper($id_poli),
+            'nama_poli' => $nama_poli,
+            'kode_antrian' => strtoupper($kode_antrian),
+            'deskripsi' => $deskripsi,
+            'status' => $status
+        ];
+
+        if ($this->db->insert('poliklinik', $data)) {
+            $this->json_response(['status' => 'success', 'message' => 'Layanan berhasil ditambahkan.', 'data' => $data]);
+        } else {
+            $this->json_response(['status' => 'error', 'message' => 'Gagal menambahkan layanan.'], 500);
+        }
+    }
+
+    public function poliklinik_update() {
+        $input = $this->get_json_input();
+        $id_poli = trim(isset($input['id_poli']) ? $input['id_poli'] : '');
+        $nama_poli = trim(isset($input['nama_poli']) ? $input['nama_poli'] : '');
+        $kode_antrian = trim(isset($input['kode_antrian']) ? $input['kode_antrian'] : '');
+        $deskripsi = trim(isset($input['deskripsi']) ? $input['deskripsi'] : '');
+        $status = isset($input['status']) ? $input['status'] : 'aktif';
+
+        if (empty($id_poli) || empty($nama_poli) || empty($kode_antrian)) {
+            $this->json_response(['status' => 'error', 'message' => 'ID, Nama Layanan, dan Kode Antrean wajib diisi.'], 400);
+        }
+
+        $data = [
+            'nama_poli' => $nama_poli,
+            'kode_antrian' => strtoupper($kode_antrian),
+            'deskripsi' => $deskripsi,
+            'status' => $status
+        ];
+
+        $this->db->where('id_poli', $id_poli);
+        if ($this->db->update('poliklinik', $data)) {
+            $this->json_response(['status' => 'success', 'message' => 'Layanan berhasil diperbarui.']);
+        } else {
+            $this->json_response(['status' => 'error', 'message' => 'Gagal memperbarui layanan.'], 500);
+        }
+    }
+
+    public function poliklinik_delete() {
+        $id_poli = $this->input->get('id_poli');
+        if (empty($id_poli)) {
+            $this->json_response(['status' => 'error', 'message' => 'ID Layanan wajib diisi.'], 400);
+        }
+
+        $this->db->where('id_poli', $id_poli);
+        if ($this->db->delete('poliklinik')) {
+            $this->json_response(['status' => 'success', 'message' => 'Layanan berhasil dihapus.']);
+        } else {
+            $this->json_response(['status' => 'error', 'message' => 'Gagal menghapus layanan.'], 500);
+        }
+    }
+
+    public function dokter_create() {
+        $input = $this->get_json_input();
+        $nama_dokter = trim(isset($input['nama_dokter']) ? $input['nama_dokter'] : '');
+        $id_poli = trim(isset($input['id_poli']) ? $input['id_poli'] : '');
+        $jadwal_praktek = trim(isset($input['jadwal_praktek']) ? $input['jadwal_praktek'] : '');
+        $status = isset($input['status']) ? $input['status'] : 'aktif';
+
+        if (empty($nama_dokter) || empty($id_poli)) {
+            $this->json_response(['status' => 'error', 'message' => 'Nama Dokter dan Layanan wajib diisi.'], 400);
+        }
+
+        $data = [
+            'nama_dokter' => $nama_dokter,
+            'id_poli' => $id_poli,
+            'jadwal_praktek' => $jadwal_praktek,
+            'status' => $status
+        ];
+
+        if ($this->db->insert('dokter', $data)) {
+            $data['id_dokter'] = $this->db->insert_id();
+            $this->json_response(['status' => 'success', 'message' => 'Dokter berhasil ditambahkan.', 'data' => $data]);
+        } else {
+            $this->json_response(['status' => 'error', 'message' => 'Gagal menambahkan dokter.'], 500);
+        }
+    }
+
+    public function dokter_update() {
+        $input = $this->get_json_input();
+        $id_dokter = trim(isset($input['id_dokter']) ? $input['id_dokter'] : '');
+        $nama_dokter = trim(isset($input['nama_dokter']) ? $input['nama_dokter'] : '');
+        $id_poli = trim(isset($input['id_poli']) ? $input['id_poli'] : '');
+        $jadwal_praktek = trim(isset($input['jadwal_praktek']) ? $input['jadwal_praktek'] : '');
+        $status = isset($input['status']) ? $input['status'] : 'aktif';
+
+        if (empty($id_dokter) || empty($nama_dokter) || empty($id_poli)) {
+            $this->json_response(['status' => 'error', 'message' => 'ID, Nama Dokter, dan Layanan wajib diisi.'], 400);
+        }
+
+        $data = [
+            'nama_dokter' => $nama_dokter,
+            'id_poli' => $id_poli,
+            'jadwal_praktek' => $jadwal_praktek,
+            'status' => $status
+        ];
+
+        $this->db->where('id_dokter', $id_dokter);
+        if ($this->db->update('dokter', $data)) {
+            $this->json_response(['status' => 'success', 'message' => 'Dokter berhasil diperbarui.']);
+        } else {
+            $this->json_response(['status' => 'error', 'message' => 'Gagal memperbarui dokter.'], 500);
+        }
+    }
+
+    public function dokter_delete() {
+        $id_dokter = $this->input->get('id_dokter');
+        if (empty($id_dokter)) {
+            $this->json_response(['status' => 'error', 'message' => 'ID Dokter wajib diisi.'], 400);
+        }
+
+        $this->db->where('id_dokter', $id_dokter);
+        if ($this->db->delete('dokter')) {
+            $this->json_response(['status' => 'success', 'message' => 'Dokter berhasil dihapus.']);
+        } else {
+            $this->json_response(['status' => 'error', 'message' => 'Gagal menghapus dokter.'], 500);
+        }
+    }
+
+    // ==========================================
+    // PROFILE SETTINGS & NOTIFICATIONS
+    // ==========================================
+
+    public function profile_update() {
+        if (!$this->session->userdata('logged_in')) {
+            $this->json_response(['status' => 'error', 'message' => 'Sesi tidak aktif.'], 401);
+        }
+
+        $id_user = $this->session->userdata('id_user');
+        $input = $this->get_json_input();
+        
+        $username = isset($input['username']) ? trim($input['username']) : '';
+        $nama_lengkap = isset($input['nama_lengkap']) ? trim($input['nama_lengkap']) : '';
+        $password = isset($input['password']) ? trim($input['password']) : '';
+
+        if (empty($username) || empty($nama_lengkap)) {
+            $this->json_response(['status' => 'error', 'message' => 'Username dan Nama Lengkap wajib diisi.'], 400);
+        }
+
+        // Check if username is taken by another user
+        $existing = $this->db->get_where('users', ['username' => $username])->row();
+        if ($existing && $existing->id_user != $id_user) {
+            $this->json_response(['status' => 'error', 'message' => 'Username sudah digunakan.'], 400);
+        }
+
+        $data = [
+            'username' => $username,
+            'nama_lengkap' => $nama_lengkap
+        ];
+
+        if (!empty($password)) {
+            $data['password'] = password_hash($password, PASSWORD_DEFAULT);
+        }
+
+        $this->db->where('id_user', $id_user);
+        if ($this->db->update('users', $data)) {
+            // Update session data
+            $this->session->set_userdata('username', $username);
+            $this->session->set_userdata('nama_lengkap', $nama_lengkap);
+
+            $this->json_response([
+                'status' => 'success',
+                'message' => 'Profil berhasil diperbarui.',
+                'user' => [
+                    'id_user' => $id_user,
+                    'username' => $username,
+                    'role' => $this->session->userdata('role'),
+                    'nama_lengkap' => $nama_lengkap
+                ]
+            ]);
+        } else {
+            $this->json_response(['status' => 'error', 'message' => 'Gagal memperbarui profil.'], 500);
+        }
+    }
+
+    public function notifications() {
+        $today = date('Y-m-d');
+        $this->db->select('antrian.*, poliklinik.nama_poli');
+        $this->db->from('antrian');
+        $this->db->join('poliklinik', 'antrian.id_poli = poliklinik.id_poli');
+        $this->db->where('antrian.tanggal_antrian', $today);
+        $this->db->order_by('antrian.waktu_daftar', 'DESC');
+        $this->db->limit(10);
+        $recent = $this->db->get()->result();
+
+        $notifications = [];
+        foreach ($recent as $r) {
+            $time = date('H:i', strtotime($r->waktu_daftar));
+            if ($r->status === 'dipanggil') {
+                $notifications[] = [
+                    'id' => 'call_' . $r->id_antrian,
+                    'title' => 'Sedang Dipanggil: ' . $r->nomor_antrian,
+                    'message' => 'Pasien ' . $r->nama_pasien . ' dipanggil di ' . $r->nama_poli,
+                    'time' => $time,
+                    'type' => 'call',
+                    'unread' => false
+                ];
+            } else if ($r->status === 'selesai') {
+                $notifications[] = [
+                    'id' => 'done_' . $r->id_antrian,
+                    'title' => 'Selesai: ' . $r->nomor_antrian,
+                    'message' => 'Pasien ' . $r->nama_pasien . ' selesai dilayani di ' . $r->nama_poli,
+                    'time' => $time,
+                    'type' => 'done',
+                    'unread' => false
+                ];
+            } else {
+                $notifications[] = [
+                    'id' => 'reg_' . $r->id_antrian,
+                    'title' => 'Antrean Baru: ' . $r->nomor_antrian,
+                    'message' => 'Pasien ' . $r->nama_pasien . ' mendaftar di ' . $r->nama_poli,
+                    'time' => $time,
+                    'type' => 'reg',
+                    'unread' => true
+                ];
+            }
+        }
+
+        $this->json_response(['status' => 'success', 'data' => $notifications]);
+    }
+
+    public function db_reset() {
+        // Disable foreign key checks to truncate tables
+        $this->db->query("SET FOREIGN_KEY_CHECKS = 0;");
+        $this->db->truncate('dokter');
+        $this->db->truncate('poliklinik');
+        $this->db->query("SET FOREIGN_KEY_CHECKS = 1;");
+
+        // Insert new poliklinik (Layanan)
+        $poliklinik_data = [
+            [
+                'id_poli' => 'BYK',
+                'nama_poli' => 'Baby & Kids Care',
+                'kode_antrian' => 'A',
+                'deskripsi' => 'Pelayanan pijat, renang, totok wajah, dan spa bayi & anak.',
+                'status' => 'aktif'
+            ],
+            [
+                'id_poli' => 'MTB',
+                'nama_poli' => 'Massage Therapy Baby & Kids',
+                'kode_antrian' => 'B',
+                'deskripsi' => 'Pijat terapi untuk bayi prematur, batuk pilek, kolik, rewel, dll.',
+                'status' => 'aktif'
+            ],
+            [
+                'id_poli' => 'MMC',
+                'nama_poli' => 'Mom Care',
+                'kode_antrian' => 'C',
+                'deskripsi' => 'Pelayanan pijat hamil, pijat nifas, laktasi, dan breast care.',
+                'status' => 'aktif'
+            ],
+            [
+                'id_poli' => 'MMH',
+                'nama_poli' => 'Mom Health',
+                'kode_antrian' => 'D',
+                'deskripsi' => 'Yoga kesuburan, prenatal yoga, hypnobirthing, dan persiapan persalinan.',
+                'status' => 'aktif'
+            ]
+        ];
+        $this->db->insert_batch('poliklinik', $poliklinik_data);
+
+        // Insert new dokter (Terapis/Bidan)
+        $dokter_data = [
+            [
+                'id_dokter' => 1,
+                'nama_dokter' => 'Bidan Aurelia, A.Md.Keb',
+                'id_poli' => 'MMC',
+                'jadwal_praktek' => 'Senin - Sabtu (08:00 - 16:00)',
+                'status' => 'aktif'
+            ],
+            [
+                'id_dokter' => 2,
+                'nama_dokter' => 'Terapis Indah Lestari',
+                'id_poli' => 'BYK',
+                'jadwal_praktek' => 'Senin - Minggu (09:00 - 17:00)',
+                'status' => 'aktif'
+            ],
+            [
+                'id_dokter' => 3,
+                'nama_dokter' => 'Fisioterapis Budi Santoso, S.Ft',
+                'id_poli' => 'MTB',
+                'jadwal_praktek' => 'Selasa, Kamis, Sabtu (10:00 - 15:00)',
+                'status' => 'aktif'
+            ],
+            [
+                'id_dokter' => 4,
+                'nama_dokter' => 'Bidan Dian Pratama, S.Tr.Keb',
+                'id_poli' => 'MMH',
+                'jadwal_praktek' => 'Senin - Jumat (08:00 - 14:00)',
+                'status' => 'aktif'
+            ]
+        ];
+        $this->db->insert_batch('dokter', $dokter_data);
+
+        $this->json_response(['status' => 'success', 'message' => 'Database seed data updated successfully to Aurelia Spa!']);
+    }
+
+    public function report_data() {
+        $start_date = $this->input->get('start_date') ?: date('Y-m-d');
+        $end_date = $this->input->get('end_date') ?: date('Y-m-d');
+
+        // 1. General Metrics
+        $this->db->where('tanggal_antrian >=', $start_date);
+        $this->db->where('tanggal_antrian <=', $end_date);
+        $total = $this->db->count_all_results('antrian');
+
+        $this->db->where('tanggal_antrian >=', $start_date);
+        $this->db->where('tanggal_antrian <=', $end_date);
+        $this->db->where('status', 'menunggu');
+        $waiting = $this->db->count_all_results('antrian');
+
+        $this->db->where('tanggal_antrian >=', $start_date);
+        $this->db->where('tanggal_antrian <=', $end_date);
+        $this->db->where('status', 'dipanggil');
+        $serving = $this->db->count_all_results('antrian');
+
+        $this->db->where('tanggal_antrian >=', $start_date);
+        $this->db->where('tanggal_antrian <=', $end_date);
+        $this->db->where('status', 'selesai');
+        $completed = $this->db->count_all_results('antrian');
+
+        $this->db->where('tanggal_antrian >=', $start_date);
+        $this->db->where('tanggal_antrian <=', $end_date);
+        $this->db->where('status', 'dilewati');
+        $skipped = $this->db->count_all_results('antrian');
+
+        // 2. Metrics by Layanan
+        $this->db->select('poliklinik.nama_poli, COUNT(antrian.id_antrian) as count');
+        $this->db->from('poliklinik');
+        $this->db->join('antrian', 'poliklinik.id_poli = antrian.id_poli AND antrian.tanggal_antrian >= "' . $start_date . '" AND antrian.tanggal_antrian <= "' . $end_date . '"', 'left');
+        $this->db->group_by('poliklinik.id_poli');
+        $by_poli = $this->db->get()->result();
+
+        // 3. Online vs Offline
+        $this->db->where('tanggal_antrian >=', $start_date);
+        $this->db->where('tanggal_antrian <=', $end_date);
+        $this->db->where('tipe_pendaftaran', 'online');
+        $online = $this->db->count_all_results('antrian');
+
+        $this->db->where('tanggal_antrian >=', $start_date);
+        $this->db->where('tanggal_antrian <=', $end_date);
+        $this->db->where('tipe_pendaftaran', 'offline');
+        $offline = $this->db->count_all_results('antrian');
+
+        // 4. Detail Table
+        $this->db->select('antrian.*, poliklinik.nama_poli, dokter.nama_dokter');
+        $this->db->from('antrian');
+        $this->db->join('poliklinik', 'antrian.id_poli = poliklinik.id_poli');
+        $this->db->join('dokter', 'antrian.id_dokter = dokter.id_dokter');
+        $this->db->where('antrian.tanggal_antrian >=', $start_date);
+        $this->db->where('antrian.tanggal_antrian <=', $end_date);
+        $this->db->order_by('antrian.waktu_daftar', 'ASC');
+        $details = $this->db->get()->result();
+
+        $this->json_response([
+            'status' => 'success',
+            'data' => [
+                'start_date' => $start_date,
+                'end_date' => $end_date,
+                'metrics' => [
+                    'total' => $total,
+                    'waiting' => $waiting,
+                    'serving' => $serving,
+                    'completed' => $completed,
+                    'skipped' => $skipped
+                ],
+                'by_poli' => $by_poli,
+                'registration_types' => [
+                    'online' => $online,
+                    'offline' => $offline
+                ],
+                'details' => $details
             ]
         ]);
     }
