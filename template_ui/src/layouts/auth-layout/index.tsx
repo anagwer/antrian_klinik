@@ -27,7 +27,7 @@ const AuthLayout = ({ children }: PropsWithChildren) => {
       >
         <Image src={Logo} alt="logo" height={36} width={36} sx={{ mr: 1.5 }} />
         <Typography variant="h4" color="primary.main" letterSpacing={1}>
-          VENUS
+          Aurelia
         </Typography>
       </ButtonBase>
       <Paper sx={{ px: { xs: 2, sm: 3.5 }, py: 4, width: 1, maxWidth: 460 }}>{children}</Paper>

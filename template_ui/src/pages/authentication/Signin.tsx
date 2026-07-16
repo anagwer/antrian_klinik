@@ -8,8 +8,7 @@ import IconButton from '@mui/material/IconButton';
 import TextField from '@mui/material/TextField';
 import Box from '@mui/material/Box';
 import IconifyIcon from 'components/base/IconifyIcon';
-
-const API_BASE = window.location.origin + '/project/antrian/index.php/api';
+import { API_BASE } from 'api';
 
 const Signin = () => {
   const [username, setUsername] = useState('');

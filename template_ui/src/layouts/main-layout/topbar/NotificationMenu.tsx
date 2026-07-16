@@ -12,8 +12,7 @@ import {
   Button,
 } from '@mui/material';
 import IconifyIcon from 'components/base/IconifyIcon';
-
-const API_BASE = window.location.origin + '/project/antrian/index.php/api';
+import { API_BASE } from 'api';
 
 export default function NotificationMenu() {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);

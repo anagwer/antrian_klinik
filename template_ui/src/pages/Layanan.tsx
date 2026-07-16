@@ -30,8 +30,7 @@ import {
   TablePagination,
 } from '@mui/material';
 import { Icon } from '@iconify/react';
-
-const API_BASE = window.location.origin + '/project/antrian/index.php/api';
+import { API_BASE } from 'api';
 
 export default function Layanan() {
   const [layananList, setLayananList] = useState<any[]>([]);

@@ -23,8 +23,7 @@ import Select from '@mui/material/Select';
 import Paper from '@mui/material/Paper';
 import Grid from '@mui/material/Grid';
 import Chip from '@mui/material/Chip';
-
-const API_BASE = window.location.origin + '/project/antrian/index.php/api';
+import { API_BASE } from 'api';
 
 interface MenuItems {
   id: number;
@@ -85,8 +84,8 @@ const ProfileMenu = () => {
           const best = list.find(v => {
             const lang = v.lang.toLowerCase();
             const name = v.name.toLowerCase();
-            return (lang.startsWith('id') || lang.includes('id')) && 
-                   (name.includes('gadis') || name.includes('indonesia') || name.includes('female') || name.includes('google') || name.includes('susan') || name.includes('online') || name.includes('natural'));
+            return (lang.startsWith('id') || lang.includes('id')) &&
+              (name.includes('gadis') || name.includes('indonesia') || name.includes('female') || name.includes('google') || name.includes('susan') || name.includes('online') || name.includes('natural'));
           }) || list.find(v => v.lang.toLowerCase().startsWith('id'));
 
           if (best) {
@@ -149,7 +148,7 @@ const ProfileMenu = () => {
     handleProfileMenuClose();
     if (id === 6) {
       localStorage.removeItem('user');
-      fetch(`${window.location.origin}/project/antrian/index.php/api/logout`)
+      fetch(`${API_BASE}/logout`)
         .finally(() => {
           window.location.hash = '#/auth/signin';
         });
@@ -240,7 +239,7 @@ const ProfileMenu = () => {
         anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
       >
         {/* Modern Premium Header */}
-        <Box 
+        <Box
           sx={{
             background: 'linear-gradient(135deg, #1976d2 0%, #115293 100%)',
             pt: 4,
@@ -252,29 +251,29 @@ const ProfileMenu = () => {
             color: '#fff'
           }}
         >
-          <Avatar 
-            src={ProfileImage} 
-            sx={{ 
-              height: 64, 
-              width: 64, 
-              border: '3px solid #fff', 
-              boxShadow: '0 4px 12px rgba(0,0,0,0.15)' 
-            }} 
+          <Avatar
+            src={ProfileImage}
+            sx={{
+              height: 64,
+              width: 64,
+              border: '3px solid #fff',
+              boxShadow: '0 4px 12px rgba(0,0,0,0.15)'
+            }}
           />
           <Typography variant="body1" fontWeight="bold" sx={{ mt: 1.5, textAlign: 'center' }}>
             {user.nama_lengkap}
           </Typography>
-          <Chip 
-            label={user.role.toUpperCase()} 
-            size="small" 
-            sx={{ 
-              mt: 1, 
-              color: '#fff', 
-              fontWeight: 'bold', 
-              fontSize: '10px', 
+          <Chip
+            label={user.role.toUpperCase()}
+            size="small"
+            sx={{
+              mt: 1,
+              color: '#fff',
+              fontWeight: 'bold',
+              fontSize: '10px',
               bgcolor: 'rgba(255,255,255,0.18)',
               border: 'none'
-            }} 
+            }}
           />
         </Box>
 
@@ -282,16 +281,16 @@ const ProfileMenu = () => {
           {menuItems.map((item) => {
             const isLogout = item.id === 6;
             return (
-              <MenuItem 
-                key={item.id} 
-                onClick={() => handleMenuItemClick(item.id)} 
-                sx={{ 
-                  py: 1.25, 
-                  px: 2, 
+              <MenuItem
+                key={item.id}
+                onClick={() => handleMenuItemClick(item.id)}
+                sx={{
+                  py: 1.25,
+                  px: 2,
                   borderRadius: '10px',
                   mb: 0.5,
                   '&:last-child': { mb: 0 },
-                  '&:hover': { 
+                  '&:hover': {
                     bgcolor: isLogout ? 'rgba(211,47,47,0.06)' : 'rgba(25,118,210,0.06)',
                     '& .menu-icon': {
                       color: isLogout ? 'error.main' : 'primary.main'
@@ -315,10 +314,10 @@ const ProfileMenu = () => {
       </Menu>
 
       {/* Profile / Account Settings Dialog */}
-      <Dialog 
-        open={openProfileDialog} 
-        onClose={() => setOpenProfileDialog(false)} 
-        fullWidth 
+      <Dialog
+        open={openProfileDialog}
+        onClose={() => setOpenProfileDialog(false)}
+        fullWidth
         maxWidth="sm"
         PaperProps={{
           sx: {
@@ -335,71 +334,73 @@ const ProfileMenu = () => {
         </DialogTitle>
         <DialogContent dividers sx={{ p: 3, borderTop: '1px solid rgba(0,0,0,0.06)', borderBottom: '1px solid rgba(0,0,0,0.06)', bgcolor: '#f8fafc' }}>
           <Grid container spacing={3} pt={1}>
-            {/* Left side: Avatar & Personal Info */}
-            <Grid item xs={12} md={6}>
-              <Paper elevation={0} sx={{ p: 2.5, border: '1px solid rgba(0,0,0,0.06)', borderRadius: '16px', height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2.5, bgcolor: '#ffffff' }}>
+            {/* Top section: Avatar & Personal Info */}
+            <Grid item xs={12}>
+              <Paper elevation={0} sx={{ p: 2.5, border: '1px solid rgba(0,0,0,0.06)', borderRadius: '16px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2.5, bgcolor: '#ffffff' }}>
                 <Typography variant="subtitle2" fontWeight="bold" color="primary" sx={{ alignSelf: 'flex-start' }}>
                   Data Diri & Akun
                 </Typography>
-                
-                <Avatar 
-                  src={ProfileImage} 
-                  sx={{ width: 80, height: 80, border: '3px solid #1976d2', boxShadow: '0 4px 12px rgba(25,118,210,0.15)' }} 
+
+                <Avatar
+                  src={ProfileImage}
+                  sx={{ width: 80, height: 80, border: '3px solid #1976d2', boxShadow: '0 4px 12px rgba(25,118,210,0.15)' }}
                 />
-                
+
                 <Stack spacing={2} sx={{ width: '100%' }}>
-                  <TextField
-                    label="Nama Lengkap"
-                    fullWidth
-                    required
-                    value={editNama}
-                    onChange={(e) => setEditNama(e.target.value)}
-                    InputProps={{
-                      startAdornment: (
-                        <IconifyIcon icon="ic:outline-person" style={{ marginRight: '8px', color: 'gray' }} />
-                      ),
-                    }}
-                    sx={{ '& .MuiOutlinedInput-root': { borderRadius: '10px' } }}
-                  />
-                  <TextField
-                    label="Username"
-                    fullWidth
-                    required
-                    value={editUsername}
-                    onChange={(e) => setEditUsername(e.target.value)}
-                    InputProps={{
-                      startAdornment: (
-                        <IconifyIcon icon="ic:outline-alternate-email" style={{ marginRight: '8px', color: 'gray' }} />
-                      ),
-                    }}
-                    sx={{ '& .MuiOutlinedInput-root': { borderRadius: '10px' } }}
-                  />
-                  <TextField
-                    label="Password Baru"
-                    type="password"
-                    fullWidth
-                    value={editPassword}
-                    onChange={(e) => setEditPassword(e.target.value)}
-                    placeholder="Kosongkan jika tidak diubah"
-                    helperText="Minimal 6 karakter"
-                    InputProps={{
-                      startAdornment: (
-                        <IconifyIcon icon="ic:outline-lock" style={{ marginRight: '8px', color: 'gray' }} />
-                      ),
-                    }}
-                    sx={{ '& .MuiOutlinedInput-root': { borderRadius: '10px' } }}
-                  />
+                  <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} sx={{ width: '100%' }}>
+                    <TextField
+                      label="Nama Lengkap"
+                      fullWidth
+                      required
+                      value={editNama}
+                      onChange={(e) => setEditNama(e.target.value)}
+                      InputProps={{
+                        startAdornment: (
+                          <IconifyIcon icon="ic:outline-person" style={{ marginRight: '8px', color: 'gray' }} />
+                        ),
+                      }}
+                      sx={{ '& .MuiOutlinedInput-root': { borderRadius: '10px' } }}
+                    />
+                    <TextField
+                      label="Username"
+                      fullWidth
+                      required
+                      value={editUsername}
+                      onChange={(e) => setEditUsername(e.target.value)}
+                      InputProps={{
+                        startAdornment: (
+                          <IconifyIcon icon="ic:outline-alternate-email" style={{ marginRight: '8px', color: 'gray' }} />
+                        ),
+                      }}
+                      sx={{ '& .MuiOutlinedInput-root': { borderRadius: '10px' } }}
+                    />
+                  </Stack>
                 </Stack>
+                <TextField
+                  label="Password Baru"
+                  type="password"
+                  fullWidth
+                  value={editPassword}
+                  onChange={(e) => setEditPassword(e.target.value)}
+                  placeholder="Kosongkan jika tidak diubah"
+                  helperText="Minimal 6 karakter"
+                  InputProps={{
+                    startAdornment: (
+                      <IconifyIcon icon="ic:outline-lock" style={{ marginRight: '8px', color: 'gray' }} />
+                    ),
+                  }}
+                  sx={{ '& .MuiOutlinedInput-root': { borderRadius: '10px' } }}
+                />
               </Paper>
             </Grid>
 
-            {/* Right side: Voice Configuration */}
-            <Grid item xs={12} md={6}>
-              <Paper elevation={0} sx={{ p: 2.5, border: '1px solid rgba(0,0,0,0.06)', borderRadius: '16px', height: '100%', display: 'flex', flexDirection: 'column', gap: 2.5, bgcolor: '#ffffff' }}>
+            {/* Bottom section: Voice Configuration */}
+            <Grid item xs={12}>
+              <Paper elevation={0} sx={{ p: 2.5, border: '1px solid rgba(0,0,0,0.06)', borderRadius: '16px', display: 'flex', flexDirection: 'column', gap: 2.5, bgcolor: '#ffffff' }}>
                 <Typography variant="subtitle2" fontWeight="bold" color="primary">
                   Pengaturan Suara Panggilan
                 </Typography>
-                
+
                 <Typography variant="caption" color="text.secondary">
                   Pilih aksen suara cewek Indonesia untuk pengumuman nomor antrean di ruang tunggu.
                 </Typography>
@@ -433,11 +434,11 @@ const ProfileMenu = () => {
                   disabled={!selectedVoiceName}
                   startIcon={<IconifyIcon icon="ic:round-volume-up" />}
                   onClick={handleTestVoice}
-                  sx={{ 
-                    textTransform: 'none', 
-                    borderRadius: '10px', 
-                    py: 1, 
-                    fontWeight: 'bold', 
+                  sx={{
+                    textTransform: 'none',
+                    borderRadius: '10px',
+                    py: 1,
+                    fontWeight: 'bold',
                     borderColor: 'primary.main',
                     color: 'primary.main',
                     bgcolor: 'rgba(25,118,210,0.02)',
@@ -448,8 +449,8 @@ const ProfileMenu = () => {
                 >
                   Uji Suara Antrean
                 </Button>
-                
-                <Box mt="auto" pt={2} sx={{ display: 'flex', alignItems: 'center', gap: 1, color: 'text.secondary' }}>
+
+                <Box mt={1} pt={2} sx={{ display: 'flex', alignItems: 'center', gap: 1, color: 'text.secondary' }}>
                   <IconifyIcon icon="ic:round-info-outline" style={{ fontSize: '18px', color: '#1976d2' }} />
                   <Typography variant="caption">
                     Suara yang Anda pilih akan sinkron ke TV Monitor secara otomatis.
@@ -459,7 +460,7 @@ const ProfileMenu = () => {
             </Grid>
           </Grid>
         </DialogContent>
-        
+
         {openProfileDialog && (successMsg || errorMsg) && (
           <Box px={3} pt={2}>
             {successMsg && <Alert severity="success" sx={{ borderRadius: '10px' }}>{successMsg}</Alert>}
@@ -468,15 +469,15 @@ const ProfileMenu = () => {
         )}
 
         <DialogActions sx={{ p: 3, gap: 1 }}>
-          <Button 
-            onClick={() => setOpenProfileDialog(false)} 
+          <Button
+            onClick={() => setOpenProfileDialog(false)}
             sx={{ textTransform: 'none', borderRadius: '10px', fontWeight: 600, px: 3 }}
           >
             Batal
           </Button>
-          <Button 
-            variant="contained" 
-            onClick={handleSaveProfile} 
+          <Button
+            variant="contained"
+            onClick={handleSaveProfile}
             sx={{ textTransform: 'none', borderRadius: '10px', fontWeight: 600, px: 4 }}
           >
             Simpan Perubahan

@@ -33,8 +33,7 @@ import {
 } from '@mui/material';
 import { Icon } from '@iconify/react';
 import ReactECharts from 'echarts-for-react';
-
-const API_BASE = window.location.origin + '/project/antrian/index.php/api';
+import { API_BASE } from 'api';
 
 const SAMPLE_KTP_DATA = [
   {

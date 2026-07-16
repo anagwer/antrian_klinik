@@ -24,9 +24,7 @@ import {
 } from '@mui/material';
 import { Icon } from '@iconify/react';
 import { createWorker } from 'tesseract.js';
-
-// Base API URL (pointing to CI backend)
-const API_BASE = window.location.origin + '/project/antrian/index.php/api';
+import { API_BASE } from 'api';
 
 const SAMPLE_KTP_DATA = [
   {

@@ -12,11 +12,12 @@ import Image from 'components/base/Image';
 import IconifyIcon from 'components/base/IconifyIcon';
 import LogoImg from 'assets/images/logo.png';
 import sitemap from 'routes/sitemap';
+import { API_BASE } from 'api';
 
 const DrawerItems = () => {
   const handleLogout = () => {
     localStorage.removeItem('user');
-    fetch(`${window.location.origin}/project/antrian/index.php/api/logout`)
+    fetch(`${API_BASE}/logout`)
       .finally(() => {
         window.location.hash = '#/auth/signin';
       });
