@@ -28,7 +28,7 @@ Sistem ini memisahkan arsitektur backend dan frontend secara modern, menggunakan
 
 5. **Manajemen Master Data (CRUD Layanan & Terapis)**:
    - **Menu Data Layanan**: CRUD untuk mengelola kategori layanan spa (Baby & Kids Care, Mom Care, dll), deskripsi, status, dan prefix kode antrean (A, B, C, D).
-   - **Menu Data Dokter/Terapis**: CRUD untuk mengelola bidan, terapis, jadwal praktek, dan penempatan kategori layanan.
+   - **Menu Data Terapis/Bidan**: CRUD untuk mengelola bidan, terapis, jadwal praktek, dan penempatan kategori layanan.
 
 6. **Notifikasi Navbar Real-time**:
    - Menu dropdown notifikasi di navbar untuk memantau pendaftaran antrean baru dan panggilan aktif secara real-time.

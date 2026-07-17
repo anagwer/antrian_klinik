@@ -9,7 +9,7 @@ CREATE TABLE IF NOT EXISTS `users` (
   `id_user` int(11) NOT NULL AUTO_INCREMENT,
   `username` varchar(50) NOT NULL,
   `password` varchar(255) NOT NULL,
-  `role` enum('admin','dokter','petugas') NOT NULL DEFAULT 'petugas',
+  `role` enum('admin','terapis','petugas') NOT NULL DEFAULT 'petugas',
   `nama_lengkap` varchar(100) NOT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   PRIMARY KEY (`id_user`),
@@ -40,19 +40,19 @@ INSERT INTO `poliklinik` (`id_poli`, `nama_poli`, `kode_antrian`, `deskripsi`, `
 ('MMH', 'Mom Health', 'D', 'Yoga kesuburan, prenatal yoga, hypnobirthing, dan persiapan persalinan.', 'aktif');
 
 -- --------------------------------------------------------
--- Table structure for table `dokter`
+-- Table structure for table `terapis`
 -- --------------------------------------------------------
-CREATE TABLE IF NOT EXISTS `dokter` (
-  `id_dokter` int(11) NOT NULL AUTO_INCREMENT,
-  `nama_dokter` varchar(100) NOT NULL,
+CREATE TABLE IF NOT EXISTS `terapis` (
+  `id_terapis` int(11) NOT NULL AUTO_INCREMENT,
+  `nama_terapis` varchar(100) NOT NULL,
   `id_poli` varchar(10) NOT NULL,
   `jadwal_praktek` varchar(255) DEFAULT NULL,
   `status` enum('aktif','cuti') NOT NULL DEFAULT 'aktif',
-  PRIMARY KEY (`id_dokter`),
+  PRIMARY KEY (`id_terapis`),
   FOREIGN KEY (`id_poli`) REFERENCES `poliklinik` (`id_poli`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
-INSERT INTO `dokter` (`id_dokter`, `nama_dokter`, `id_poli`, `jadwal_praktek`, `status`) VALUES
+INSERT INTO `terapis` (`id_terapis`, `nama_terapis`, `id_poli`, `jadwal_praktek`, `status`) VALUES
 (1, 'Bidan Aurelia, A.Md.Keb', 'MMC', 'Senin - Sabtu (08:00 - 16:00)', 'aktif'),
 (2, 'Terapis Indah Lestari', 'BYK', 'Senin - Minggu (09:00 - 17:00)', 'aktif'),
 (3, 'Fisioterapis Budi Santoso, S.Ft', 'MTB', 'Selasa, Kamis, Sabtu (10:00 - 15:00)', 'aktif'),
@@ -94,7 +94,7 @@ CREATE TABLE IF NOT EXISTS `antrian` (
   `foto_ktp` varchar(255) DEFAULT NULL,
   `keluhan` text NOT NULL,
   `id_poli` varchar(10) NOT NULL,
-  `id_dokter` int(11) NOT NULL,
+  `id_terapis` int(11) NOT NULL,
   `nomor_antrian` varchar(10) NOT NULL, -- e.g. A-01, B-03
   `nomor_urut` int(11) NOT NULL, -- Numeric sequence of the day, e.g. 1, 2, 3
   `status` enum('menunggu','dipanggil','selesai','dilewati') NOT NULL DEFAULT 'menunggu',
@@ -104,5 +104,5 @@ CREATE TABLE IF NOT EXISTS `antrian` (
   `waktu_dilayani` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id_antrian`),
   FOREIGN KEY (`id_poli`) REFERENCES `poliklinik` (`id_poli`) ON DELETE CASCADE,
-  FOREIGN KEY (`id_dokter`) REFERENCES `dokter` (`id_dokter`) ON DELETE CASCADE
+  FOREIGN KEY (`id_terapis`) REFERENCES `terapis` (`id_terapis`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;

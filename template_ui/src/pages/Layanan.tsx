@@ -468,7 +468,7 @@ export default function Layanan() {
             <strong>{selectedLayanan?.nama_poli}</strong>?
           </Typography>
           <Typography color="error" variant="caption" display="block" mt={1}>
-            Peringatan: Menghapus layanan ini juga akan menghapus data Dokter dan Antrean yang
+            Peringatan: Menghapus layanan ini juga akan menghapus data Terapis/Bidan dan Antrean yang
             terhubung (Cascade Delete).
           </Typography>
         </DialogContent>

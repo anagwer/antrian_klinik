@@ -46,9 +46,9 @@ const sitemap: MenuItem[] = [
     icon: 'material-symbols:medical-services',
   },
   {
-    id: 'dokter-crud',
-    subheader: 'Data Dokter',
-    path: '/dokter',
+    id: 'terapis-crud',
+    subheader: 'Data Terapis / Bidan',
+    path: '/terapis',
     icon: 'material-symbols:medical-information',
   },
 ];

@@ -60,11 +60,11 @@ export default function Register() {
   const [noHp, setNoHp] = useState('');
   const [keluhan, setKeluhan] = useState('');
   const [idPoli, setIdPoli] = useState('');
-  const [idDokter, setIdDokter] = useState('');
+  const [idTerapis, setIdTerapis] = useState('');
 
   // Master Data
   const [poliklinik, setPoliklinik] = useState<any[]>([]);
-  const [dokterList, setDokterList] = useState<any[]>([]);
+  const [terapisList, setTerapisList] = useState<any[]>([]);
 
   // OCR and Loading States
   const [imagePreview, setImagePreview] = useState<string | null>(null);
@@ -96,25 +96,25 @@ export default function Register() {
       .catch((err) => console.error('Gagal mengambil poliklinik:', err));
   }, []);
 
-  // Fetch doctors when poliklinik changes
+  // Fetch therapists when poliklinik changes
   useEffect(() => {
     if (!idPoli) {
-      setDokterList([]);
-      setIdDokter('');
+      setTerapisList([]);
+      setIdTerapis('');
       return;
     }
 
-    fetch(`${API_BASE}/dokter?id_poli=${idPoli}`)
+    fetch(`${API_BASE}/terapis?id_poli=${idPoli}`)
       .then((res) => res.json())
       .then((data) => {
         if (data.status === 'success') {
-          setDokterList(data.data);
+          setTerapisList(data.data);
           if (data.data.length > 0) {
-            setIdDokter(data.data[0].id_dokter);
+            setIdTerapis(data.data[0].id_terapis);
           }
         }
       })
-      .catch((err) => console.error('Gagal mengambil dokter:', err));
+      .catch((err) => console.error('Gagal mengambil terapis/bidan:', err));
   }, [idPoli]);
 
   // Handle file select for KTP upload
@@ -296,7 +296,7 @@ export default function Register() {
       no_hp: noHp,
       keluhan,
       id_poli: idPoli,
-      id_dokter: idDokter,
+      id_terapis: idTerapis,
       tipe_pendaftaran: 'online',
       foto_ktp: imagePreview || '' // If webcam base64 is captured
     };
@@ -486,7 +486,7 @@ export default function Register() {
                   <Icon icon="material-symbols:info" /> FIFO (First In First Out)
                 </Typography>
                 <Typography variant="caption" display="block" mt={1}>
-                  Urutan antrean dihitung berdasarkan waktu pendaftaran Anda. Siapa yang mendaftar lebih awal akan dilayani terlebih dahulu oleh dokter pilihan Anda.
+                  Urutan antrean dihitung berdasarkan waktu pendaftaran Anda. Siapa yang mendaftar lebih awal akan dilayani terlebih dahulu oleh terapis/bidan pilihan Anda.
                 </Typography>
               </CardContent>
             </Card>
@@ -609,15 +609,15 @@ export default function Register() {
 
                 <Grid item xs={12} sm={6}>
                   <FormControl fullWidth required disabled={!idPoli}>
-                    <InputLabel>Dokter Spesialis</InputLabel>
+                    <InputLabel>Terapis / Bidan</InputLabel>
                     <Select
-                      value={idDokter}
-                      label="Dokter Spesialis"
-                      onChange={(e) => setIdDokter(e.target.value)}
+                      value={idTerapis}
+                      label="Terapis / Bidan"
+                      onChange={(e) => setIdTerapis(e.target.value)}
                     >
-                      {dokterList.map((d) => (
-                        <MenuItem key={d.id_dokter} value={d.id_dokter}>
-                          {d.nama_dokter}
+                      {terapisList.map((d) => (
+                        <MenuItem key={d.id_terapis} value={d.id_terapis}>
+                          {d.nama_terapis}
                         </MenuItem>
                       ))}
                     </Select>
@@ -699,7 +699,7 @@ export default function Register() {
                 {ticketData.nama_poli}
               </Typography>
               <Typography variant="caption" display="block" color="text.secondary" paragraph>
-                Dokter: {ticketData.nama_dokter}
+                Terapis/Bidan: {ticketData.nama_terapis}
               </Typography>
 
               <Divider sx={{ my: 1.5 }} />

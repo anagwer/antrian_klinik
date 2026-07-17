@@ -266,7 +266,7 @@ export default function Monitor() {
                     {activeCall.nama_poli}
                   </Typography>
                   <Typography variant="h5" color="text.secondary" sx={{ color: '#475569' }} gutterBottom>
-                    Dokter: {activeCall.doctor_name}
+                    Terapis/Bidan: {activeCall.terapis_name}
                   </Typography>
                   <Typography variant="h6" color="primary.main" fontWeight="bold" sx={{ mt: 1 }}>
                     Pasien: {activeCall.patient_name}
@@ -320,7 +320,7 @@ export default function Monitor() {
                             {item.nama_poli}
                           </Typography>
                           <Typography variant="caption" display="block" sx={{ color: '#64748b' }}>
-                            Dokter: {item.doctor_name}
+                            Terapis/Bidan: {item.terapis_name}
                           </Typography>
                         </Box>
                         

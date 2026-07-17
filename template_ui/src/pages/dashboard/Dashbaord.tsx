@@ -87,8 +87,8 @@ export default function Dashboard() {
   const [regNoHp, setRegNoHp] = useState('');
   const [regKeluhan, setRegKeluhan] = useState('');
   const [regIdPoli, setRegIdPoli] = useState('');
-  const [regIdDokter, setRegIdDokter] = useState('');
-  const [regDokterList, setRegDokterList] = useState<any[]>([]);
+  const [regIdTerapis, setRegIdTerapis] = useState('');
+  const [regTerapisList, setRegTerapisList] = useState<any[]>([]);
   
   // Ticket PDF/Print state
   const [ticketData, setTicketData] = useState<any>(null);
@@ -172,25 +172,25 @@ export default function Dashboard() {
     return () => clearInterval(interval);
   }, [selectedPoli]);
 
-  // Fetch doctors for registration dialog
+  // Fetch therapists for registration dialog
   useEffect(() => {
     if (!regIdPoli) {
-      setRegDokterList([]);
-      setRegIdDokter('');
+      setRegTerapisList([]);
+      setRegIdTerapis('');
       return;
     }
 
-    fetch(`${API_BASE}/dokter?id_poli=${regIdPoli}`)
+    fetch(`${API_BASE}/terapis?id_poli=${regIdPoli}`)
       .then((res) => res.json())
       .then((data) => {
         if (data.status === 'success') {
-          setRegDokterList(data.data);
+          setRegTerapisList(data.data);
           if (data.data.length > 0) {
-            setRegIdDokter(data.data[0].id_dokter);
+            setRegIdTerapis(data.data[0].id_terapis);
           }
         }
       })
-      .catch((err) => console.error('Gagal mengambil dokter:', err));
+      .catch((err) => console.error('Gagal mengambil terapis/bidan:', err));
   }, [regIdPoli]);
 
   // Voice Announcement helper
@@ -385,7 +385,7 @@ export default function Dashboard() {
                           <td>${d.nik_pasien}</td>
                           <td>${d.nama_pasien}</td>
                           <td>${d.nama_poli}</td>
-                          <td>${d.nama_dokter}</td>
+                          <td>${d.nama_terapis}</td>
                           <td style="text-transform: capitalize;">${d.tipe_pendaftaran}</td>
                           <td>${d.waktu_daftar}</td>
                           <td>
@@ -530,7 +530,7 @@ export default function Dashboard() {
       no_hp: regNoHp,
       keluhan: regKeluhan,
       id_poli: regIdPoli,
-      id_dokter: regIdDokter,
+      id_terapis: regIdTerapis,
       tipe_pendaftaran: 'offline'
     };
 
@@ -1107,15 +1107,15 @@ export default function Dashboard() {
 
               <Grid item xs={12} sm={6}>
                 <FormControl fullWidth required disabled={!regIdPoli}>
-                  <InputLabel>Dokter Spesialis</InputLabel>
+                  <InputLabel>Terapis / Bidan</InputLabel>
                   <Select
-                    value={regIdDokter}
-                    label="Dokter Spesialis"
-                    onChange={(e) => setRegIdDokter(e.target.value)}
+                    value={regIdTerapis}
+                    label="Terapis / Bidan"
+                    onChange={(e) => setRegIdTerapis(e.target.value)}
                   >
-                    {regDokterList.map((d) => (
-                      <MenuItem key={d.id_dokter} value={d.id_dokter}>
-                        {d.nama_dokter}
+                    {regTerapisList.map((d) => (
+                      <MenuItem key={d.id_terapis} value={d.id_terapis}>
+                        {d.nama_terapis}
                       </MenuItem>
                     ))}
                   </Select>
@@ -1177,7 +1177,7 @@ export default function Dashboard() {
                 {ticketData.nama_poli}
               </Typography>
               <Typography variant="caption" display="block" color="text.secondary" paragraph>
-                Dokter: {ticketData.nama_dokter}
+                Terapis/Bidan: {ticketData.nama_terapis}
               </Typography>
 
               <Divider sx={{ my: 1.5 }} />

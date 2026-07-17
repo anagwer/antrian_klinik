@@ -14,7 +14,7 @@ const Signup = lazy(() => import('pages/authentication/Signup'));
 const Register = lazy(() => import('pages/Register'));
 const Monitor = lazy(() => import('pages/Monitor'));
 const Layanan = lazy(() => import('pages/Layanan'));
-const Dokter = lazy(() => import('pages/Dokter'));
+const Terapis = lazy(() => import('pages/Terapis'));
 
 const router = createHashRouter(
   [
@@ -48,10 +48,10 @@ const router = createHashRouter(
               ),
             },
             {
-              path: '/dokter',
+              path: '/terapis',
               element: (
                 <Suspense fallback={<PageLoader />}>
-                  <Dokter />
+                  <Terapis />
                 </Suspense>
               ),
             },
