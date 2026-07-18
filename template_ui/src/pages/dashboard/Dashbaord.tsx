@@ -904,7 +904,7 @@ export default function Dashboard() {
                                 <Button
                                   variant="contained"
                                   size="small"
-                                  color="info"
+                                  color="success"
                                   onClick={() => handleUpdateStatus(row.id_antrian, 'selesai')}
                                   title="Selesai Dilayani"
                                   sx={{ color: '#fff', fontWeight: 'bold' }}
@@ -945,7 +945,7 @@ export default function Dashboard() {
                               <Button
                                 variant="contained"
                                 size="small"
-                                color="secondary"
+                                color="warning"
                                 onClick={() => handleUpdateStatus(row.id_antrian, 'menunggu')}
                                 title="Kembalikan ke antrean tunggu"
                                 sx={{ color: '#fff', fontWeight: 'bold' }}
