@@ -54,7 +54,7 @@ const Signin = () => {
   return (
     <>
       <Typography align="center" variant="h4" fontWeight="800" color="primary">
-        Klinik Anagwer
+        Klinik Aurelia
       </Typography>
       <Typography mt={1.5} align="center" variant="body2" color="text.secondary">
         Selamat datang! Silakan login untuk mengelola antrean pasien.

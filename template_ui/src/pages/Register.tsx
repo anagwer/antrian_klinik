@@ -260,7 +260,7 @@ export default function Register() {
         const value = line.replace(/alamat/i, '').replace(/[:=]/g, '').trim();
         if (value && value.length > 5) setAlamat(value);
       }
-    } );
+    });
   };
 
   // Demo auto-fill helper
@@ -364,7 +364,7 @@ export default function Register() {
           <Box display="flex" flexDirection="column" gap={3}>
             <Box>
               <Typography variant="h4" fontWeight="800" gutterBottom color="primary.main">
-                Klinik Anagwer
+                Klinik Aurelia
               </Typography>
               <Typography variant="subtitle1" color="text.secondary">
                 Pendaftaran & Pengambilan Antrean Online Pasien
@@ -682,7 +682,7 @@ export default function Register() {
               }}
             >
               <Typography variant="h5" fontWeight="bold" color="primary" gutterBottom>
-                KLINIK ANAGWER
+                KLINIK Aurelia
               </Typography>
               <Typography variant="caption" display="block" color="text.secondary" gutterBottom>
                 Jl. Sehat Walafiat No. 1, Kota Sehat

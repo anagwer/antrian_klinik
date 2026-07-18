@@ -71,7 +71,7 @@ export default function Dashboard() {
   const [selectedPoli, setSelectedPoli] = useState('');
   const [queues, setQueues] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
-  
+
   // Chart states
   const [byPoliChartData, setByPoliChartData] = useState<any[]>([]);
   const [regTypeChartData, setRegTypeChartData] = useState({ online: 0, offline: 0 });
@@ -89,7 +89,7 @@ export default function Dashboard() {
   const [regIdPoli, setRegIdPoli] = useState('');
   const [regIdTerapis, setRegIdTerapis] = useState('');
   const [regTerapisList, setRegTerapisList] = useState<any[]>([]);
-  
+
   // Ticket PDF/Print state
   const [ticketData, setTicketData] = useState<any>(null);
   const [openTicket, setOpenTicket] = useState(false);
@@ -212,12 +212,12 @@ export default function Dashboard() {
       formattedNumber = formattedNumber.replace(/9/g, ' sembilan ');
 
       const speechText = `Nomor antrean, ${formattedNumber}. Silakan menuju, ${poliName}.`;
-      
+
       const utterance = new SpeechSynthesisUtterance(speechText);
       utterance.lang = 'id-ID';
       utterance.rate = 0.85;
       utterance.pitch = 1.25; // High pitch for female effect
-      
+
       const savedVoiceName = localStorage.getItem('selectedVoiceName');
       const voices = window.speechSynthesis.getVoices();
       let voice = null;
@@ -228,8 +228,8 @@ export default function Dashboard() {
         voice = voices.find(v => {
           const lang = v.lang.toLowerCase();
           const name = v.name.toLowerCase();
-          return (lang.startsWith('id') || lang.includes('id')) && 
-                 (name.includes('gadis') || name.includes('indonesia') || name.includes('female') || name.includes('google') || name.includes('susan') || name.includes('online') || name.includes('natural'));
+          return (lang.startsWith('id') || lang.includes('id')) &&
+            (name.includes('gadis') || name.includes('indonesia') || name.includes('female') || name.includes('google') || name.includes('susan') || name.includes('online') || name.includes('natural'));
         });
       }
       if (!voice) {
@@ -427,14 +427,14 @@ export default function Dashboard() {
     const bVal = b[orderBy];
     if (aVal === null || aVal === undefined) return 1;
     if (bVal === null || bVal === undefined) return -1;
-    
+
     if (typeof aVal === 'string') {
-      return order === 'asc' 
-        ? aVal.localeCompare(bVal) 
+      return order === 'asc'
+        ? aVal.localeCompare(bVal)
         : bVal.localeCompare(aVal);
     } else {
-      return order === 'asc' 
-        ? (aVal > bVal ? 1 : -1) 
+      return order === 'asc'
+        ? (aVal > bVal ? 1 : -1)
         : (aVal < bVal ? 1 : -1);
     }
   });
@@ -519,7 +519,7 @@ export default function Dashboard() {
   // Handle offline registration submit
   const handleRegisterOffline = (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     const payload = {
       nik: regNik,
       nama: regNama,
@@ -547,7 +547,7 @@ export default function Dashboard() {
           setOpenRegisterDialog(false);
           setTicketData(data.data);
           setOpenTicket(true);
-          
+
           // Clear registration form
           setRegNik('');
           setRegNama('');
@@ -557,7 +557,7 @@ export default function Dashboard() {
           setRegAlamat('');
           setRegNoHp('');
           setRegKeluhan('');
-          
+
           refreshData();
         } else {
           alert(data.message || 'Gagal mendaftarkan pasien offline.');
@@ -660,7 +660,7 @@ export default function Dashboard() {
             Dashboard Antrian & Pendaftaran
           </Typography>
           <Typography variant="subtitle2" color="text.secondary">
-            Klinik Anagwer - Panel Administrasi Loket Utama
+            Klinik Aurelia - Panel Administrasi Loket Utama
           </Typography>
         </Box>
         <Box display="flex" gap={2}>
@@ -720,7 +720,7 @@ export default function Dashboard() {
 
       {/* Main Queue Management Section */}
       <Grid container spacing={4} mb={4}>
-        
+
         {/* Left Side: Queue Controls and Active Queue Table */}
         <Grid item xs={12} md={8}>
           <Paper elevation={2} sx={{ p: 3, borderRadius: '12px' }}>
@@ -728,7 +728,7 @@ export default function Dashboard() {
               <Typography variant="h6" fontWeight="bold">
                 Kontrol Antrean Layanan
               </Typography>
-              
+
               {/* Select Clinic to manage */}
               <Box display="flex" alignItems="center" gap={2}>
                 <FormControl size="small" sx={{ minWidth: 200 }}>
@@ -746,7 +746,7 @@ export default function Dashboard() {
                     ))}
                   </Select>
                 </FormControl>
-                
+
                 {/* FIFO Call Next Button */}
                 <Button
                   variant="contained"
@@ -890,10 +890,10 @@ export default function Dashboard() {
                               row.status === 'dipanggil'
                                 ? 'success'
                                 : row.status === 'selesai'
-                                ? 'info'
-                                : row.status === 'dilewati'
-                                ? 'error'
-                                : 'default'
+                                  ? 'info'
+                                  : row.status === 'dilewati'
+                                    ? 'error'
+                                    : 'default'
                             }
                           />
                         </TableCell>
@@ -921,9 +921,9 @@ export default function Dashboard() {
                                 >
                                   Lewati
                                 </Button>
-                                <IconButton 
-                                  color="primary" 
-                                  onClick={() => handleRecall(row.id_antrian)} 
+                                <IconButton
+                                  color="primary"
+                                  onClick={() => handleRecall(row.id_antrian)}
                                   title="Panggil Ulang"
                                   sx={{ bgcolor: 'rgba(25, 118, 210, 0.08)' }}
                                 >
@@ -1160,7 +1160,7 @@ export default function Dashboard() {
               }}
             >
               <Typography variant="h5" fontWeight="bold" color="primary" gutterBottom>
-                KLINIK ANAGWER
+                KLINIK Aurelia
               </Typography>
               <Typography variant="caption" display="block" color="text.secondary" gutterBottom>
                 Jl. Sehat Walafiat No. 1, Kota Sehat
@@ -1247,10 +1247,10 @@ export default function Dashboard() {
       </Dialog>
 
       {/* Report Date Picker Dialog */}
-      <Dialog 
-        open={openReportDialog} 
-        onClose={() => setOpenReportDialog(false)} 
-        fullWidth 
+      <Dialog
+        open={openReportDialog}
+        onClose={() => setOpenReportDialog(false)}
+        fullWidth
         maxWidth="xs"
         PaperProps={{
           sx: { borderRadius: '16px', p: 1 }
@@ -1286,14 +1286,14 @@ export default function Dashboard() {
           </Stack>
         </DialogContent>
         <DialogActions sx={{ p: 2, gap: 1 }}>
-          <Button 
-            onClick={() => setOpenReportDialog(false)} 
+          <Button
+            onClick={() => setOpenReportDialog(false)}
             sx={{ textTransform: 'none', borderRadius: '8px' }}
           >
             Batal
           </Button>
-          <Button 
-            variant="contained" 
+          <Button
+            variant="contained"
             color="primary"
             onClick={handlePrintReport}
             startIcon={<Icon icon="ic:round-print" />}
