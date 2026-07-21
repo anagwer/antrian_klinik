@@ -38,7 +38,7 @@ const DrawerItems = () => {
         borderColor="info.main"
         zIndex={1000}
       >
-        <ButtonBase component={Link} href="/" disableRipple>
+        <ButtonBase component={Link} href="/#/dashboard" disableRipple>
           <Image src={LogoImg} alt="logo" height={52} width={52} sx={{ mr: 1.75 }} />
           <Box>
             <Typography

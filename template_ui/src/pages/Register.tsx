@@ -328,9 +328,16 @@ export default function Register() {
       });
   };
 
+  // Redirect to monitor page when ticket modal is closed
+  const handleCloseTicket = () => {
+    setOpenTicket(false);
+    window.location.hash = '#/monitor';
+  };
+
   // Print Queue Ticket helper
   const handlePrint = () => {
     window.print();
+    handleCloseTicket();
   };
 
   return (
@@ -358,18 +365,53 @@ export default function Register() {
         }
       `}</style>
 
+      <Box 
+        display="flex" 
+        flexDirection={{ xs: 'column', sm: 'row' }} 
+        justifyContent="space-between" 
+        alignItems={{ xs: 'flex-start', sm: 'center' }} 
+        gap={2} 
+        mb={4} 
+        className="no-print"
+      >
+        <Box>
+          <Typography variant="h4" fontWeight="800" color="primary.main">
+            Klinik Anagwer
+          </Typography>
+          <Typography variant="subtitle1" color="text.secondary">
+            Pendaftaran & Pengambilan Antrean Online Pasien
+          </Typography>
+        </Box>
+        <Button
+          variant="outlined"
+          color="primary"
+          startIcon={<Icon icon="ic:round-admin-panel-settings" />}
+          onClick={() => {
+            const user = localStorage.getItem('user');
+            window.location.hash = user ? '#/dashboard' : '#/auth/signin';
+          }}
+          sx={{ 
+            borderRadius: '20px', 
+            px: 3, 
+            textTransform: 'none', 
+            fontWeight: 'bold',
+            color: 'primary.main',
+            borderColor: 'primary.main',
+            '&:hover': {
+              color: 'primary.main',
+              borderColor: 'primary.main',
+              bgcolor: 'rgba(67, 24, 255, 0.08)',
+            }
+          }}
+        >
+          {localStorage.getItem('user') ? 'Dashboard Admin' : 'Login Admin'}
+        </Button>
+      </Box>
+
       <Grid container spacing={4}>
         {/* Left Side: Instructions and KTP Scanner */}
         <Grid item xs={12} md={5}>
           <Box display="flex" flexDirection="column" gap={3}>
-            <Box>
-              <Typography variant="h4" fontWeight="800" gutterBottom color="primary.main">
-                Klinik Anagwer
-              </Typography>
-              <Typography variant="subtitle1" color="text.secondary">
-                Pendaftaran & Pengambilan Antrean Online Pasien
-              </Typography>
-            </Box>
 
             <Card
               sx={{
@@ -669,7 +711,7 @@ export default function Register() {
       </Grid>
 
       {/* Ticket Result Dialog */}
-      <Dialog open={openTicket} onClose={() => setOpenTicket(false)} maxWidth="xs" fullWidth>
+      <Dialog open={openTicket} onClose={handleCloseTicket} maxWidth="xs" fullWidth>
         <DialogContent id="print-area">
           {ticketData && (
             <Box
@@ -762,7 +804,7 @@ export default function Register() {
           )}
         </DialogContent>
         <DialogActions sx={{ p: 2, justifyContent: 'space-between' }} className="no-print">
-          <Button onClick={() => setOpenTicket(false)} color="inherit">
+          <Button onClick={handleCloseTicket} color="inherit">
             Tutup
           </Button>
           <Button onClick={handlePrint} variant="contained" color="primary" startIcon={<Icon icon="ic:round-print" />}>

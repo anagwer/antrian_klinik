@@ -23,14 +23,13 @@ const sitemap: MenuItem[] = [
   {
     id: 'dashboard',
     subheader: 'Dashboard',
-    path: '/',
+    path: '/dashboard',
     icon: 'ri:dashboard-fill',
-    active: true,
   },
   {
     id: 'register-portal',
     subheader: 'Pendaftaran Online',
-    path: '/register',
+    path: '/',
     icon: 'material-symbols:patient-list-outline',
   },
   {
@@ -42,13 +41,13 @@ const sitemap: MenuItem[] = [
   {
     id: 'layanan-crud',
     subheader: 'Data Layanan',
-    path: '/layanan',
+    path: '/dashboard/layanan',
     icon: 'material-symbols:medical-services',
   },
   {
     id: 'terapis-crud',
     subheader: 'Data Terapis / Bidan',
-    path: '/terapis',
+    path: '/dashboard/terapis',
     icon: 'material-symbols:medical-information',
   },
 ];

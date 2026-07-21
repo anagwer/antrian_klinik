@@ -40,7 +40,7 @@ const Signin = () => {
         if (data.status === 'success') {
           localStorage.setItem('user', JSON.stringify(data.user));
           // Redirect to home/dashboard
-          window.location.hash = '#/';
+          window.location.hash = '#/dashboard';
         } else {
           setErrorMsg(data.message || 'Login gagal.');
         }

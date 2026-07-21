@@ -28,6 +28,22 @@ const router = createHashRouter(
         {
           path: '/',
           element: (
+            <Suspense fallback={<PageLoader />}>
+              <Register />
+            </Suspense>
+          ),
+        },
+        {
+          path: '/register',
+          element: (
+            <Suspense fallback={<PageLoader />}>
+              <Register />
+            </Suspense>
+          ),
+        },
+        {
+          path: '/dashboard',
+          element: (
             <MainLayout>
               <Suspense fallback={<PageLoader />}>
                 <Outlet />
@@ -40,7 +56,7 @@ const router = createHashRouter(
               element: <Dashboard />,
             },
             {
-              path: '/layanan',
+              path: 'layanan',
               element: (
                 <Suspense fallback={<PageLoader />}>
                   <Layanan />
@@ -48,7 +64,7 @@ const router = createHashRouter(
               ),
             },
             {
-              path: '/terapis',
+              path: 'terapis',
               element: (
                 <Suspense fallback={<PageLoader />}>
                   <Terapis />
@@ -56,14 +72,6 @@ const router = createHashRouter(
               ),
             },
           ],
-        },
-        {
-          path: '/register',
-          element: (
-            <Suspense fallback={<PageLoader />}>
-              <Register />
-            </Suspense>
-          ),
         },
         {
           path: '/monitor',
