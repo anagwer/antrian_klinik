@@ -376,7 +376,7 @@ export default function Register() {
       >
         <Box>
           <Typography variant="h4" fontWeight="800" color="primary.main">
-            Klinik Anagwer
+            Klinik Aurelia
           </Typography>
           <Typography variant="subtitle1" color="text.secondary">
             Pendaftaran & Pengambilan Antrean Online Pasien
@@ -412,17 +412,6 @@ export default function Register() {
         {/* Left Side: Instructions and KTP Scanner */}
         <Grid item xs={12} md={5}>
           <Box display="flex" flexDirection="column" gap={3}>
-<<<<<<< HEAD
-=======
-            <Box>
-              <Typography variant="h4" fontWeight="800" gutterBottom color="primary.main">
-                Klinik Aurelia
-              </Typography>
-              <Typography variant="subtitle1" color="text.secondary">
-                Pendaftaran & Pengambilan Antrean Online Pasien
-              </Typography>
-            </Box>
->>>>>>> 043f54c2841e630ae869c663c50f7ee6838f3ef3
 
             <Card
               sx={{
