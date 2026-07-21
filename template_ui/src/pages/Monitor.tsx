@@ -43,7 +43,7 @@ export default function Monitor() {
       .then((data) => {
         if (data.status === 'success') {
           setMonitors(data.data);
-          
+
           // Determine the most recently updated active call to show as the primary feature
           // Since the API returns them, let's check which one was called last.
           // In our database structure, we don't have update timestamp directly, but we can look for any active call that differs from our lastSpeechId map
@@ -59,7 +59,7 @@ export default function Monitor() {
               if (spokenMap[poliId] !== currentCall) {
                 spokenMap[poliId] = currentCall;
                 newSpeechTriggered = true;
-                
+
                 // Trigger voice announcement
                 if (!isMuted) {
                   announceQueue(currentCall, item.nama_poli);
@@ -125,12 +125,12 @@ export default function Monitor() {
       formattedNumber = formattedNumber.replace(/9/g, ' sembilan ');
 
       const speechText = `Nomor antrean, ${formattedNumber}. Silakan menuju, ${poliName}.`;
-      
+
       const utterance = new SpeechSynthesisUtterance(speechText);
       utterance.lang = 'id-ID';
       utterance.rate = 0.85;
       utterance.pitch = 1.25; // Raised pitch for female voice effect
-      
+
       // Attempt to find Indonesian female voice
       const savedVoiceName = localStorage.getItem('selectedVoiceName');
       const voices = window.speechSynthesis.getVoices();
@@ -142,8 +142,8 @@ export default function Monitor() {
         voice = voices.find(v => {
           const lang = v.lang.toLowerCase();
           const name = v.name.toLowerCase();
-          return (lang.startsWith('id') || lang.includes('id')) && 
-                 (name.includes('gadis') || name.includes('indonesia') || name.includes('female') || name.includes('google') || name.includes('susan') || name.includes('online') || name.includes('natural'));
+          return (lang.startsWith('id') || lang.includes('id')) &&
+            (name.includes('gadis') || name.includes('indonesia') || name.includes('female') || name.includes('google') || name.includes('susan') || name.includes('online') || name.includes('natural'));
         });
       }
       if (!voice) {
@@ -205,7 +205,7 @@ export default function Monitor() {
               MONITOR ANTRIAN UTAMA
             </Typography>
             <Typography variant="caption" sx={{ color: '#64748b' }}>
-              Klinik Anagwer - Mengutamakan Pelayanan Berkualitas
+              Klinik Aurelia - Mengutamakan Pelayanan Berkualitas
             </Typography>
           </Box>
         </Box>
@@ -223,7 +223,7 @@ export default function Monitor() {
       {/* Main Panel */}
       <Container maxWidth="xl" sx={{ flexGrow: 1, py: 4, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
         <Grid container spacing={4} alignItems="stretch">
-          
+
           {/* Left Side: Highlight/Current Called Patient */}
           <Grid item xs={12} md={7} display="flex" flexDirection="column">
             <Paper
@@ -261,7 +261,7 @@ export default function Monitor() {
                     {activeCall.active_call}
                   </Typography>
                   <Divider sx={{ width: '80%', mb: 3 }} />
-                  
+
                   <Typography variant="h3" fontWeight="bold" sx={{ color: '#0f172a' }} gutterBottom>
                     {activeCall.nama_poli}
                   </Typography>
@@ -323,7 +323,7 @@ export default function Monitor() {
                             Terapis/Bidan: {item.terapis_name}
                           </Typography>
                         </Box>
-                        
+
                         {/* Call Number Display */}
                         <Box
                           sx={{
@@ -355,7 +355,7 @@ export default function Monitor() {
                         <Typography variant="caption" display="flex" alignItems="center" gap={0.5} sx={{ color: '#475569' }}>
                           <Icon icon="ic:round-people" /> Antrean Menunggu: <strong>{item.waiting_count}</strong>
                         </Typography>
-                        
+
                         {item.active_call !== '---' && (
                           <IconButton
                             size="small"
@@ -399,7 +399,7 @@ export default function Monitor() {
           }
         `}</style>
         <div className="marquee-content">
-          Selamat datang di Klinik Anagwer. Harap melakukan verifikasi tiket di loket pendaftaran. Antrean diproses secara adil menggunakan Algoritma FIFO (First In First Out). Jaga kesehatan Anda dan tetap patuhi protokol kesehatan di dalam area klinik. Terima kasih.
+          Selamat datang di Klinik Aurelia. Harap melakukan verifikasi tiket di loket pendaftaran. Antrean diproses secara adil menggunakan Algoritma FIFO (First In First Out). Jaga kesehatan Anda dan tetap patuhi protokol kesehatan di dalam area klinik. Terima kasih.
         </div>
       </Box>
     </Box>

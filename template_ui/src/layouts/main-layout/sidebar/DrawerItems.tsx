@@ -59,7 +59,7 @@ const DrawerItems = () => {
               fontWeight={500}
               fontFamily={fontFamily.poppins}
             >
-              Anagwer
+              Aurelia
             </Typography>
           </Box>
         </ButtonBase>
@@ -76,8 +76,8 @@ const DrawerItems = () => {
       </List>
 
       <Box mt="auto" px={3} pb={6}>
-        <Button 
-          variant="contained" 
+        <Button
+          variant="contained"
           color="primary"
           fullWidth
           startIcon={<IconifyIcon icon="ic:baseline-logout" />}

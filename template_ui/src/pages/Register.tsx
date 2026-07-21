@@ -260,7 +260,7 @@ export default function Register() {
         const value = line.replace(/alamat/i, '').replace(/[:=]/g, '').trim();
         if (value && value.length > 5) setAlamat(value);
       }
-    } );
+    });
   };
 
   // Demo auto-fill helper
@@ -412,6 +412,17 @@ export default function Register() {
         {/* Left Side: Instructions and KTP Scanner */}
         <Grid item xs={12} md={5}>
           <Box display="flex" flexDirection="column" gap={3}>
+<<<<<<< HEAD
+=======
+            <Box>
+              <Typography variant="h4" fontWeight="800" gutterBottom color="primary.main">
+                Klinik Aurelia
+              </Typography>
+              <Typography variant="subtitle1" color="text.secondary">
+                Pendaftaran & Pengambilan Antrean Online Pasien
+              </Typography>
+            </Box>
+>>>>>>> 043f54c2841e630ae869c663c50f7ee6838f3ef3
 
             <Card
               sx={{
@@ -724,7 +735,7 @@ export default function Register() {
               }}
             >
               <Typography variant="h5" fontWeight="bold" color="primary" gutterBottom>
-                KLINIK ANAGWER
+                KLINIK Aurelia
               </Typography>
               <Typography variant="caption" display="block" color="text.secondary" gutterBottom>
                 Jl. Sehat Walafiat No. 1, Kota Sehat
